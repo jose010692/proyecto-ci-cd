@@ -1,0 +1,43 @@
+name: CI/CD con Docker
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar pruebas
+        run: npm test
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Construir imagen Docker
+        run: docker build -t proyecto-ci-cd .
+
+      - name: Verificar imagen
+        run: docker images proyecto-ci-cd
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simular despliegue
+        run: echo "Desplegando contenedor Docker..."
